@@ -57,3 +57,8 @@ func (s *Sampler) Sample(lines []Line) []Line {
 func (s *Sampler) Reset() {
 	s.counter = 0
 }
+
+// Config returns the SampleConfig that this Sampler was configured with.
+func (s *Sampler) Config() SampleConfig {
+	return s.cfg
+}
