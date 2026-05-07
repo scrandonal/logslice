@@ -79,3 +79,27 @@ func TestTailReaderEmptyInput(t *testing.T) {
 		t.Errorf("expected no lines, got %d", len(lines))
 	}
 }
+
+func TestTailReaderNoTimestamp(t *testing.T) {
+	// Lines without a recognized timestamp prefix should still be emitted
+	// but with a nil Timestamp field.
+	input := "no timestamp here\nanother plain line\n"
+	r := strings.NewReader(input)
+	out := make(chan TailLine, 5)
+
+	go TailReader(r, TailOptions{}, out)
+
+	var lines []TailLine
+	for tl := range out {
+		lines = append(lines, tl)
+	}
+
+	if len(lines) != 2 {
+		t.Fatalf("expected 2 lines, got %d", len(lines))
+	}
+	for _, tl := range lines {
+		if tl.Line.Timestamp != nil {
+			t.Errorf("expected nil timestamp for plain line, got %v", tl.Line.Timestamp)
+		}
+	}
+}
