@@ -46,6 +46,20 @@ func TestExtractAllQuoted(t *testing.T) {
 	}
 }
 
+func TestExtractMultipleFields(t *testing.T) {
+	fe := NewFieldExtractor([]string{"level", "code"})
+	got := fe.Extract(`level=warn msg="bad request" code=400`)
+	if got["level"] != "warn" {
+		t.Errorf("expected warn, got %q", got["level"])
+	}
+	if got["code"] != "400" {
+		t.Errorf("expected 400, got %q", got["code"])
+	}
+	if _, ok := got["msg"]; ok {
+		t.Error("expected msg to be absent when not in extractor fields")
+	}
+}
+
 func TestFieldsJSON(t *testing.T) {
 	lines := []Line{
 		{Text: `level=info msg=started`},
